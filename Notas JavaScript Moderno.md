@@ -505,3 +505,155 @@ getPlanets();
 
 ````
 
+### Prototypes
+
+Un objeto en JavaScript tiene otro objeto, llamado ***prototype\*** (prototipo, en español). Cuando pedimos a un objeto una propiedad que no tiene, la busca en su prototipo. Así, un prototipo es otro objeto que se utiliza como una fuente de propiedades alternativa.
+
+*Prototype* es una propiedad de Object, -el objeto del que se derivan todos los demás objetos-, y esta propiedad es, a su vez, un objeto. Por tanto, el prototipo último de un objeto es [Object.prototype](https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Objetos_globales/Object/prototype). Este prototipo padre tiene métodos que comparten todos los objetos.
+
+### Factory Functions.
+
+Este patron no es muy usado, debido a que se crea una copia para cada instancia del objeto que creamos.
+
+```` javascript
+function makeColor(r,g,b) {
+	const color = {};
+    color.r = r;
+    color.g = g;
+    color.b = b;
+    color.rgb= function(){
+        const { r, g, b} = this;
+        return `rgb(${r},${g},${b})`;
+    };
+    color.hex = function(){
+        const {r, g, b} = this;
+        return ('#'+((1<<24) + (r << 16) + (g << 8) + b).toString(16).slice(1));
+    };
+    return color;
+}
+
+const firsColor = makeColor(35,255,150);
+const black = makeColor(0,0,0); // Cada uno de estos objetos creados tiene una copia de los mismos metodos, lo cual es ineficiente. Es decir estan definidos en cada objeto creado.
+````
+
+### Constructor Functions.
+
+Se declaran con la primera letra en mayuscula por convencion, eso me dice que es una funcion que ayuda a crear objetos
+
+````javascript
+function Car(make, model, year) {
+  this.make = make;
+  this.model = model;
+  this.year = year;
+}
+
+const car1 = new Car('Eagle', 'Talon TSi', 1993);
+
+console.log(car1.make);
+// expected output: "Eagle"
+````
+
+Notese que la funcion no tiene retorno he ahi el sentido del operador new
+
+The **`new` operator** lets developers create an instance of a user-defined object type or of one of the built-in object types that has a constructor function. The **`new`** keyword does the following things:
+
+1. Creates a blank, plain JavaScript object;
+2. Links (sets the constructor of) this object to another object;
+3. Passes the newly created object from *Step 1* as the `this` context;
+4. Returns `this` if the function doesn't return its own object.
+
+Para añadir funciones al prototipo se debe hacer fura de la funcion constructora.
+
+````javascript
+function Color(r,g,b){
+    this.r = r;
+    this.g = g;
+    this.b = b;
+}
+
+Color.prototype.rgb = function(){
+    const { r, g, b } = this;
+    return `rgb(${r},${g},${b})`;
+}
+
+Color.prototype.hex = function(){
+        const {r, g, b} = this;
+        return ('#'+((1<<24) + (r << 16) + (g << 8) + b).toString(16).slice(1));
+    }
+
+const firsColor = makeColor(35,255,150);
+const black = makeColor(0,0,0); //De esta manera solo se pasa una referencia a los metodos, los metodos no estan declarados para cada objeto creado.
+
+frisColor.hex === black.hex //true
+
+````
+
+### Classes.
+
+Son una mejor syntaxis para realizar lo mismo que vimos en las funciones contruscor pero de una manera mas elegante. No tenemos que agregar metodos manualmente.
+
+````javascript
+// Para clases se empieza con Mayuscula
+class Color {
+    //Se ejecuta inmediatamente cuando un nuevo objeto es creado,
+    constructor(r, g, b, name){ 
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.name = name;
+    }
+    innerRGB(){
+        const { r, g, b} = this;
+        return `${r},${g},${b}`;
+    }
+    rgb(){
+        return `rgb(${this,innerRGB()})`;
+    }
+    rgba(a = 1.0){
+        return `rgba(${this,innerRGB()},${a})`;
+    }
+    hex(){
+      const {r, g, b} = this;
+      return ('#'+((1<<24) + (r << 16) + 	   (g << 8) + b).toString(16).slice(1));
+}
+
+const c1 = new Color(255, 67, 89, 'tomato');
+
+````
+
+### Extends Super, and Subclasses.
+
+Esta es una forma de compartir funcionalidades entre clases.
+
+````javascript
+class Pet{
+	constructor(name,age){
+		this.name = name;
+		this.age = age;
+	}
+	eat(){
+		return `${this.name} is eating`;
+	}
+}
+
+class Cat extend Pet{
+    consutructor(name, ages,livesLeft){
+        super(name,age);
+        this.livesLeft = livesLeft
+    }
+    meow(){
+        return 'MEEEOWWW!!'
+    }
+}
+
+class Dog extend Pet{
+    bark(){
+        return 'WOOOF!!'
+    }
+}
+````
+
+La palabra reservada super, hace referencia ala clase de la cual estamos extendiendo
+
+
+

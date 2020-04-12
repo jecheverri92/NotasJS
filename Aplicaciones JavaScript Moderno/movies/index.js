@@ -57,7 +57,7 @@ const onMovie = async (movie, sumaryElement,side) =>{
         rightMovie = movie;
     }
     if(leftMovie && rightMovie){
-        runComparision(leftMovie,rightMovie);
+        runComparision();
     }
 }
 
@@ -106,7 +106,7 @@ const movieTemplate = movieDetail => {
     <article class="media">
       <figure class="media-left">
         <p class="image">
-          <img src="${movieDetail.Poster}" />
+          <img src="${imgSrc}" />
         </p>
       </figure>
       <div class="media-content">
